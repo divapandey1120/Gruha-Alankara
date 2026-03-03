@@ -1,37 +1,66 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import os
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Ensure the database directory exists
+db_dir = os.path.join(os.path.dirname(__file__), 'database')
+os.makedirs(db_dir, exist_ok=True)
+
 db = SQLAlchemy(app)
 
+# Import models after db is created to avoid circular imports
 from models import *
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/design')
 def design():
     return render_template('design.html')
+
 
 @app.route('/catalog')
 def catalog():
     return render_template('catalog.html')
 
+
 @app.route('/analyze')
 def analyze():
     return render_template('analyze.html')
+
 
 @app.route('/ar-viewer')
 def ar_viewer():
     return render_template('ar_viewer.html')
 
+
 @app.route('/live-ar-camera')
 def live_ar_camera():
     return render_template('live_ar_camera.html')
+
+
+@app.route('/test-db')
+def test_db():
+    """Test route to verify database connectivity."""
+    try:
+        db.session.execute(db.text('SELECT 1'))
+        return jsonify({
+            'status': 'success',
+            'message': 'Database connection is working!'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Database connection failed: {str(e)}'
+        }), 500
+
 
 if __name__ == '__main__':
     with app.app_context():
