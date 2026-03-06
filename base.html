@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Gruha Alankara{% endblock %}</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- JS -->
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        🏠 Gruha Alankara
+    </div>
+
+    <ul class="nav-links">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('create_design') }}">Create Design</a></li>
+        <li><a href="{{ url_for('gallery') }}">Gallery</a></li>
+
+        {% if session.get('user') %}
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('register') }}">Signup</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+
+<!-- FLASH MESSAGES -->
+<div class="flash-container">
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+    {% block content %}
+    <!-- Child pages will insert content here -->
+    {% endblock %}
+
+</div>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>© 2026 Gruha Alankara | AI Interior Design</p>
+</footer>
+
+</body>
+</html>
