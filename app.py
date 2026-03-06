@@ -1,15 +1,8 @@
-"""
-Gruha Alankara - Main Flask Application
-Activity 4.1: Core routes, authentication, file uploads, and tool integration.
-"""
-
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, send_from_directory, session
 import os
 import uuid
+import json
 from datetime import datetime
-from flask import (
-    Flask, render_template, request, redirect,
-    url_for, flash, session, jsonify
-)
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from config import Config
@@ -22,9 +15,20 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Ensure required directories exist
-db_dir = os.path.join(os.path.dirname(__file__), 'database')
-os.makedirs(db_dir, exist_ok=True)
-os.makedirs(app.config.get('UPLOAD_FOLDER', 'uploads'), exist_ok=True)
+required_dirs = [
+    app.config.get('UPLOAD_FOLDER', 'uploads'),
+    'database',
+    'static/css',
+    'static/js',
+    'templates'
+]
+
+for d in required_dirs:
+    if not os.path.exists(d):
+        os.makedirs(d, exist_ok=True)
+        print(f"✔ Directory checked/created: {d}")
+    else:
+        print(f"✔ Directory checked/created: {d}")
 
 # ──────────────────────────────────────────────
 # 2. Initialize Database
@@ -32,22 +36,23 @@ os.makedirs(app.config.get('UPLOAD_FOLDER', 'uploads'), exist_ok=True)
 db.init_app(app)
 
 # ──────────────────────────────────────────────
-# 3. Import Models and Tools
+# 3. Import Models, Tools, and Agents
 # ──────────────────────────────────────────────
 from models import User, Design, Furniture, Booking
-
 from tools.room_analyzer import RoomAnalyzer
 from tools.style_suggester import StyleSuggester
 from tools.furniture_optimizer import FurnitureOptimizer
 from tools.budget_planner import BudgetPlanner
 from tools.design_catalog import DesignCatalog
+from agents.interior_agent import InteriorDesignAgent
 
-# Initialize tool instances (available for route handlers)
+# Initialize instances
 room_analyzer = RoomAnalyzer()
 style_suggester = StyleSuggester()
 furniture_optimizer = FurnitureOptimizer()
 budget_planner = BudgetPlanner()
 design_catalog = DesignCatalog()
+interior_agent = InteriorDesignAgent()
 
 
 # ──────────────────────────────────────────────
@@ -161,39 +166,57 @@ def design():
         flash('Please log in to access the Design Studio.', 'error')
         return redirect(url_for('login'))
 
+    result = None
     if request.method == 'POST':
         # Handle design form submission
         room_type = request.form.get('room_type', 'living_room')
         style = request.form.get('style', 'modern')
-        budget_str = request.form.get('budget', '0')
-        budget = float(budget_str) if budget_str else 0.0
+        budget_str = request.form.get('budget', '1000')
+        try:
+            budget = float(budget_str) if budget_str else 1000.0
+        except ValueError:
+            budget = 1000.0
 
         # Handle optional image upload
-        image_path = ''
+        image_path = None
         if 'room_image' in request.files:
             file = request.files['room_image']
             if file and file.filename and allowed_file(file.filename):
                 ext = file.filename.rsplit('.', 1)[1].lower()
-                unique_name = f"{uuid.uuid4().hex}.{ext}"
+                unique_name = f"design_{uuid.uuid4().hex}.{ext}"
                 safe_name = secure_filename(unique_name)
                 save_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_name)
                 file.save(save_path)
                 image_path = save_path
 
-                # Save design record
+                # Run full AI design pipeline
+                result = interior_agent.generate_design(
+                    image_path=save_path,
+                    style_theme=style,
+                    budget=budget,
+                    room_type=room_type
+                )
+
+                # Save design record in DB
                 new_design = Design(
                     user_id=session['user_id'],
                     image_path=safe_name,
                     selected_style=style,
+                    ai_output=json.dumps(result) if result.get('status') == 'success' else None,
                     created_at=datetime.utcnow()
                 )
                 db.session.add(new_design)
                 db.session.commit()
+                
+                if result.get('status') == 'success':
+                    flash('AI Design Generated Successfully!', 'success')
+                else:
+                    flash(f"AI Generation Warning: {result.get('message', 'Unknown issue')}", 'warning')
 
-        flash('Design request submitted successfully!', 'success')
-        return render_template('design.html')
+        if not image_path:
+             flash('Please upload a room image to generate a design.', 'error')
 
-    return render_template('design.html')
+    return render_template('design.html', result=result)
 
 
 # ──────────────────────────────────────────────
@@ -277,7 +300,7 @@ def analyze():
                 save_path = os.path.join(app.config['UPLOAD_FOLDER'], safe_name)
                 file.save(save_path)
 
-                # Run room analysis
+                # Run room analysis using the agent's internal tools or directly
                 analysis = room_analyzer.analyze(save_path)
                 flash('Room analysis complete!', 'success')
             else:

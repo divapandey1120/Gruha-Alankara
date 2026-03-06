@@ -16,6 +16,7 @@ from tools.furniture_optimizer import FurnitureOptimizer
 from tools.budget_planner import BudgetPlanner
 from tools.design_catalog import DesignCatalog
 from tools.image_generator import ImageGenerator
+from tools.ai_recommender import AIDesignRecommender
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,9 @@ class InteriorDesignAgent:
         self.budget_planner = BudgetPlanner()
         self.design_catalog = DesignCatalog()
         self.image_generator = ImageGenerator()
+        
+        # New transformer-based recommender
+        self.ai_recommender = AIDesignRecommender()
 
         # ── Simple in-memory cache ──
         self._cache = {}
@@ -99,6 +103,10 @@ class InteriorDesignAgent:
             # ── 7. Catalog matching ──
             catalog_matches = self._match_catalog(furniture_plan, style_theme, budget)
 
+            # ── AI Model Transformer Generation ──
+            # Replaces generic models by hitting true HuggingFace ViT & T5
+            ai_output = self.ai_recommender.generate_design_suggestions(validated_path, style_theme)
+
             # ── 8. AI image generation ──
             generated_image = self._generate_design_image(
                 validated_path, style_theme, room_type
@@ -118,7 +126,12 @@ class InteriorDesignAgent:
                 "budget_plan": budget_plan,
                 "catalog_matches": catalog_matches,
                 "generated_design_image": generated_image,
-                "design_story": design_story
+                "design_story": design_story,
+                
+                # Appending the transformer generative output here securely
+                "ai_transformer_output": ai_output,
+                "color_schemes": ai_output.get("color_schemes", []),
+                "placement_suggestions": ai_output.get("placement_suggestions", [])
             }
 
             # Store in cache

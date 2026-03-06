@@ -3,30 +3,55 @@
 {% block title %}Home - Gruha Alankara{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div class="hero-content">
-        <h1>Welcome to Gruha Alankara</h1>
-        <p>Transform your living space with AI-powered interior design.</p>
-        <a href="{{ url_for('design') }}" class="btn btn-primary">Get Started</a>
+<div class="hero-wrapper" style="min-height: 85vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-radius: 24px; margin-bottom: 4rem; background: var(--bg-secondary);">
+    <!-- Background Image with Overlay -->
+    <div style="position: absolute; inset: 0; z-index: 1;">
+        <img src="{{ url_for('static', filename='img/modern_living_room.png') }}" alt="Modern Living Room" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.25;">
+        <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(244, 247, 249, 0.3), rgba(244, 247, 249, 1));"></div>
     </div>
-</section>
 
-<section class="features">
-    <div class="feature-card">
-        <h3>AI Design Suggestions</h3>
-        <p>Get personalized interior design recommendations powered by AI.</p>
+    <div class="hero-content text-center" style="max-width: 850px; padding: 3rem; z-index: 2; position: relative;">
+        <h1 style="font-size: clamp(2.5rem, 8vw, 4.8rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -0.03em; color: var(--text-primary);">
+            Design Your <span style="background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Dream Haven</span> with AI
+        </h1>
+        <p style="font-size: 1.35rem; color: var(--text-secondary); margin-bottom: 3rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+            The next generation of interior design is here. Use agentic AI and AR to visualize and curate your perfect space in seconds.
+        </p>
+        <div class="d-flex justify-content-center gap-4 flex-wrap">
+            <a href="{{ url_for('design') }}" class="btn btn-primary btn-lg" style="padding: 1.2rem 3rem; font-size: 1.2rem; border-radius: 50px; display: inline-flex; align-items: center; gap: 0.75rem;">
+                Start Designing <span>✨</span>
+            </a>
+            <a href="{{ url_for('analyze') }}" class="btn btn-secondary btn-lg" style="padding: 1.2rem 3rem; font-size: 1.2rem; border-radius: 50px; background: rgba(10, 37, 64, 0.05); border-color: rgba(10, 37, 64, 0.2); color: var(--accent-primary);">
+                Analyze My Space
+            </a>
+        </div>
     </div>
-    <div class="feature-card">
-        <h3>Room Analyzer</h3>
-        <p>Upload your room photo and get instant analysis and improvement tips.</p>
+    
+    <!-- Abstract background glow -->
+    <div style="position: absolute; top: -10%; right: -10%; width: 40%; height: 60%; background: var(--accent-primary); filter: blur(150px); opacity: 0.2; border-radius: 50%; z-index: 1;"></div>
+    <div style="position: absolute; bottom: -10%; left: -10%; width: 40%; height: 60%; background: var(--accent-secondary); filter: blur(150px); opacity: 0.15; border-radius: 50%; z-index: 1;"></div>
+</div>
+
+<div class="section-title text-center mb-5">
+    <h2 style="font-size: 2.5rem; font-weight: 700;">Powerful AI Tools</h2>
+    <p class="text-secondary">Everything you need to create a premium living space.</p>
+</div>
+
+<section class="features" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+    <div class="feature-card h-100" style="padding: 2.5rem; text-align: left; background: var(--bg-card); border: 1px solid var(--border-color);">
+        <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">🧠</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">AI Design Agent</h3>
+        <p class="text-secondary">Our agentic AI doesn't just suggest colors; it plans budgets, furniture placements, and cohesive styles.</p>
     </div>
-    <div class="feature-card">
-        <h3>AR Viewer</h3>
-        <p>Visualize furniture and decor in your space using augmented reality.</p>
+    <div class="feature-card h-100" style="padding: 2.5rem; text-align: left; background: var(--bg-card); border: 1px solid var(--border-color);">
+        <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">👁️</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Room Intelligence</h3>
+        <p class="text-secondary">Instant computer vision analysis to detect room type, dimensions, and lighting conditions automatically.</p>
     </div>
-    <div class="feature-card">
-        <h3>Budget Planner</h3>
-        <p>Plan your interior design project within your budget.</p>
+    <div class="feature-card h-100" style="padding: 2.5rem; text-align: left; background: var(--bg-card); border: 1px solid var(--border-color);">
+        <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">🕶️</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Live AR Viewing</h3>
+        <p class="text-secondary">Visualize precisely how your new furniture will fit in your room using our immersive AR camera.</p>
     </div>
 </section>
 {% endblock %}

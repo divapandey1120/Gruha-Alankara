@@ -3,50 +3,116 @@
 {% block title %}Room Analyzer - Gruha Alankara{% endblock %}
 
 {% block content %}
-<div class="analyze-page">
-    <h2>Room Analyzer</h2>
-    <p>Upload a photo of your room to get AI-powered design analysis and recommendations.</p>
+<div class="analyze-page" style="max-width: 1000px; margin: 0 auto;">
+    <div class="text-center mb-5">
+        <h1 style="font-size: 3rem; font-weight: 800; background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem;">Room Analyzer</h1>
+        <p class="text-secondary" style="font-size: 1.1rem;">Upload a photo of your room to get AI-powered design analysis and recommendations instantly.</p>
+    </div>
 
-    <div class="upload-section">
+
+    <div class="upload-section card p-4 mb-5 shadow-lg" style="background: var(--bg-card); border: 1px solid var(--border-color);">
         <form method="POST" action="{{ url_for('analyze') }}" enctype="multipart/form-data" id="analyze-form">
-            <div class="upload-area" id="upload-area">
+            <div class="upload-area" id="upload-area" style="border: 2px dashed var(--accent-secondary); padding: 4rem; border-radius: var(--border-radius); cursor: pointer; transition: all 0.3s ease; position: relative;">
                 <input type="file" id="room-image" name="room_image" accept="image/*" required hidden>
-                <label for="room-image" class="upload-label">
-                    <span>Click to upload or drag and drop</span>
-                    <span class="file-types">PNG, JPG, JPEG up to 16MB</span>
+                <div class="upload-icon mb-3" style="font-size: 3rem; color: var(--accent-secondary);">📸</div>
+                <label for="room-image" class="upload-label" style="cursor: pointer;">
+                    <div class="h4 text-primary" id="upload-text">Click to upload or drag and drop</div>
+                    <div class="text-secondary mt-2" id="upload-subtext">PNG, JPG, JPEG up to 16MB</div>
                 </label>
+                <!-- File name indicator -->
+                <div id="file-info" class="hidden mt-3 p-2 rounded" style="background: rgba(46, 125, 50, 0.1); color: var(--accent-secondary); border: 1px solid var(--accent-secondary); display: inline-block;">
+                    <span id="file-name" class="font-weight-bold"></span>
+                </div>
             </div>
-            <div id="image-preview" class="image-preview hidden"></div>
-            <button type="submit" class="btn btn-primary">Analyze Room</button>
+            
+            <div id="preview-container" class="mt-4 hidden text-center">
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <span class="badge bg-success" style="padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.9rem;">✓ Image Ready</span>
+                    <span id="display-file-name" class="ml-3 text-secondary italic"></span>
+                </div>
+                <div id="image-preview" style="max-height: 400px; overflow: hidden; border-radius: var(--border-radius); border: 2px solid var(--accent-primary); display: inline-block; box-shadow: var(--glow-primary);"></div>
+                <div class="mt-4">
+                    <button type="button" class="btn btn-secondary" onclick="location.reload()" style="border-radius: 50px;">Clear & Restart</button>
+                    <button type="submit" class="btn btn-primary ml-2" style="border-radius: 50px; padding: 0.625rem 2.5rem;">Begin AI Analysis</button>
+                </div>
+            </div>
+
+            <div id="upload-submit-container" class="mt-4 text-center">
+                <button type="submit" class="btn btn-primary btn-lg" style="padding: 1rem 3rem;">Analyze Room</button>
+            </div>
         </form>
     </div>
 
     {% if analysis %}
-    <div class="analysis-results">
-        <h3>Analysis Results</h3>
-        <div class="result-card">
-            <h4>Detected Room Type</h4>
-            <p>{{ analysis.room_type }}</p>
+    <div class="analysis-results animate-fade-in">
+        <div class="d-flex align-items-center mb-4">
+            <h3 class="mb-0">Analysis Results</h3>
+            <div class="ml-3 badge bg-primary">AI Powered</div>
         </div>
-        <div class="result-card">
-            <h4>Design Style</h4>
-            <p>{{ analysis.style }}</p>
+
+        <div class="row style-grid">
+            <div class="style-card col-md-3">
+                <div class="text-secondary small text-uppercase font-weight-bold mb-1">Detected Room</div>
+                <div class="h4 text-capitalize">{{ analysis.room_type.replace('_', ' ') }}</div>
+            </div>
+            <div class="style-card col-md-3">
+                <div class="text-secondary small text-uppercase font-weight-bold mb-1">Inferred Style</div>
+                <div class="h4 text-capitalize">{{ analysis.style }}</div>
+            </div>
+            <div class="style-card col-md-3">
+                <div class="text-secondary small text-uppercase font-weight-bold mb-1">Furniture Count</div>
+                <div class="h4">{{ analysis.detected_furniture | length }} items</div>
+            </div>
+             <div class="style-card col-md-3">
+                <div class="text-secondary small text-uppercase font-weight-bold mb-1">Lighting</div>
+                <div class="h4 text-capitalize">{{ analysis.lighting.intensity }} {{ analysis.lighting.type }}</div>
+            </div>
         </div>
-        <div class="result-card">
-            <h4>Detected Furniture</h4>
-            <ul>
-                {% for item in analysis.detected_furniture %}
-                <li>{{ item }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="result-card">
-            <h4>Recommendations</h4>
-            <ul>
-                {% for rec in analysis.recommendations %}
-                <li>{{ rec }}</li>
-                {% endfor %}
-            </ul>
+
+        <div class="row mt-4">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-4">
+                    <h4 class="text-primary mb-3">Detected Elements</h4>
+                    <ul class="list-group list-group-flush">
+                        {% for item in analysis.detected_furniture %}
+                        <li class="list-group-item bg-transparent text-capitalize" style="border-bottom: 1px solid var(--border-color);">
+                            <span class="mr-2">🔍</span> {{ item }}
+                        </li>
+                        {% else %}
+                        <li class="list-group-item bg-transparent">Scanning for items...</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-4">
+                    <h4 class="text-primary mb-3" style="color: var(--accent-secondary) !important;">AI Recommendations</h4>
+                    <ul class="list-group list-group-flush">
+                        {% for item in analysis.recommendations %}
+                        <li class="list-group-item bg-transparent text-capitalize" style="border-bottom: 1px solid var(--border-color); font-weight: 600;">
+                            <span class="mr-2">✨</span> {{ item }}
+                        </li>
+                        {% else %}
+                        <li class="list-group-item bg-transparent">Generating tips...</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 p-4">
+                    <h4 class="text-primary mb-3">Suggested Palette</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for rec in analysis.dominant_colors %}
+                        <div class="p-2 border rounded text-capitalize" style="background: rgba(46, 125, 50, 0.1); color: var(--accent-primary); flex: 1; min-width: 100px; text-align: center; font-size: 0.9rem;">
+                            {{ rec }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-4 p-3 rounded" style="background: rgba(10, 37, 64, 0.05);">
+                        <p class="small text-secondary mb-0 italic" style="font-size: 0.75rem;">Based on lighting: {{ analysis.lighting.intensity }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     {% endif %}
@@ -55,4 +121,18 @@
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/analyze.js') }}"></script>
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    #loading-overlay:not(.hidden) {
+        display: flex !important;
+    }
+    
+    .hidden {
+        display: none !important;
+    }
+</style>
 {% endblock %}

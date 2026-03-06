@@ -44,5 +44,106 @@
 
         <button type="submit" class="btn btn-primary">Generate Design</button>
     </form>
+
+    {% if result %}
+    <!-- Result Display Section -->
+    <div class="design-results mt-5">
+        <hr>
+        <h3 class="text-center mb-4">Your AI-Generated Design</h3>
+        
+        <div class="design-summary mb-4 p-4 rounded bg-light border">
+            <h4>Design Story</h4>
+            <p class="lead">{{ result.design_story }}</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Room Analysis</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Type:</strong> {{ result.room_analysis.room_type }}</li>
+                            <li class="list-group-item"><strong>Colors:</strong> {{ result.room_analysis.dominant_colors | join(', ') }}</li>
+                            <li class="list-group-item"><strong>Lighting:</strong> {{ result.room_analysis.lighting.intensity }} {{ result.room_analysis.lighting.type }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Style: {{ result.style.name }}</h4>
+                        <p>{{ result.style.description }}</p>
+                        <strong>Palette:</strong>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            {% for color in result.style.color_palette %}
+                                <div class="color-swatch p-2 border rounded" style="background-color: {{ color }}; width: 40px; height: 40px;" title="{{ color }}"></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Furniture Recommendations</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th>Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in result.furniture_recommendations %}
+                                    <tr>
+                                        <td class="text-capitalize">{{ item.item }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td><span class="badge {% if item.priority == 'high' %}bg-danger{% elif item.priority == 'medium' %}bg-warning{% else %}bg-secondary{% endif %}">{{ item.priority }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Suggested Color Schemes</h4>
+                        <ul class="list-group list-group-flush">
+                            {% for color in result.color_schemes %}
+                            <li class="list-group-item">{{ color }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Placement Suggestions</h4>
+                        <ul class="list-group list-group-flush">
+                            {% for placement in result.placement_suggestions %}
+                            <li class="list-group-item">{{ placement }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

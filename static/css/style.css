@@ -14,23 +14,38 @@
 
 /* ---- 1. Theme Variables ---- */
 :root {
-    --bg-primary: #0a0a1a;
-    --bg-secondary: #12122a;
-    --bg-card: #1a1a3e;
-    --text-primary: #f0f0f5;
-    --text-secondary: #9898b0;
-    --accent-primary: #7c3aed;
-    --accent-secondary: #a855f7;
-    --border-color: rgba(124, 58, 237, 0.2);
-    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --bg-primary: #f4f7f9;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --text-primary: #0a2540;
+    --text-secondary: #4a5568;
+    --accent-primary: #0a2540; /* Navy */
+    --accent-secondary: #2e7d32; /* Green */
+    --border-color: rgba(10, 37, 64, 0.1);
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
 
     --gradient-accent: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    --gradient-bg: linear-gradient(160deg, #0a0a1a 0%, #1a103c 50%, #0a0a1a 100%);
-    --glow-primary: 0 0 20px rgba(124, 58, 237, 0.3);
+    --gradient-bg: linear-gradient(160deg, #f4f7f9 0%, #e2e8f0 100%);
+    --glow-primary: 0 0 20px rgba(46, 125, 50, 0.2);
     --border-radius: 12px;
     --border-radius-sm: 8px;
-    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    --transition: all 0.3s ease;
+    --font-family: 'Outfit', 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
 }
 
 /* ---- 2. Global Layout ---- */
@@ -59,7 +74,7 @@ a:hover {
 
 /* ---- 3. Navigation Bar ---- */
 .navbar {
-    background: rgba(18, 18, 42, 0.85);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
@@ -140,7 +155,7 @@ a:hover {
     text-align: center;
     padding: 4rem 2rem;
     background: var(--gradient-accent);
-    color: white;
+    color: white; /* Still white to contrast against navy/green gradient */
     border-radius: var(--border-radius);
     margin-bottom: 3rem;
     position: relative;
@@ -180,9 +195,9 @@ a:hover {
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(124, 58, 237, 0.25);
-    border-color: var(--accent-primary);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(46, 125, 50, 0.15);
+    border-color: var(--accent-secondary);
 }
 
 /* Feature Cards */
@@ -233,12 +248,12 @@ a:hover {
 .btn-primary {
     background: var(--gradient-accent);
     color: white;
-    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(124, 58, 237, 0.5);
+    box-shadow: 0 6px 25px rgba(46, 125, 50, 0.3);
     filter: brightness(1.1);
 }
 
@@ -249,9 +264,9 @@ a:hover {
 }
 
 .btn-secondary:hover {
-    background: rgba(124, 58, 237, 0.15);
+    background: rgba(46, 125, 50, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.15);
 }
 
 .btn-danger {
@@ -294,8 +309,8 @@ a:hover {
 
 .form-control:focus {
     outline: none;
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
 }
 
 .form-control::placeholder {
@@ -430,7 +445,7 @@ a:hover {
 
 .style-card:hover {
     transform: scale(1.03);
-    box-shadow: 0 8px 30px rgba(124, 58, 237, 0.3);
+    box-shadow: 0 8px 30px rgba(46, 125, 50, 0.15);
     border-color: var(--accent-secondary);
 }
 
@@ -459,8 +474,8 @@ a:hover {
 
 .catalog-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.25);
-    border-color: var(--accent-primary);
+    box-shadow: 0 8px 25px rgba(46, 125, 50, 0.15);
+    border-color: var(--accent-secondary);
 }
 
 .catalog-card img {
@@ -506,7 +521,6 @@ a:hover {
     display: block;
 }
 
-/* ---- 15. Upload Area ---- */
 .upload-area {
     border: 2px dashed var(--border-color);
     border-radius: var(--border-radius);
@@ -515,12 +529,12 @@ a:hover {
     cursor: pointer;
     transition: var(--transition);
     margin: 1.5rem 0;
-    background: rgba(124, 58, 237, 0.05);
+    background: rgba(46, 125, 50, 0.05);
 }
 
 .upload-area:hover {
-    border-color: var(--accent-primary);
-    background: rgba(124, 58, 237, 0.1);
+    border-color: var(--accent-secondary);
+    background: rgba(46, 125, 50, 0.1);
 }
 
 .upload-label {
